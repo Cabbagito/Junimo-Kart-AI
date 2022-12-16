@@ -6,11 +6,12 @@ import os
 import matplotlib.pyplot as plt
 
 
-IMG_SIZE = (30, 15)  # 450
-PER_CLASS_LIMIT = 20
+IMG_SIZE = (30, 15)  # 30x15 original
+PER_CLASS_LIMIT = 200
 EPOCHS = 300
-BATCH_SIZE = 1000
-NUM_MODELS = 30
+BATCH_SIZE = 10000
+LEARNING_RATE = 0.001
+NUM_MODELS = 10
 PLOT = False
 TRAIN_TEST_SPLIT = 0.8
 device = "cuda" if is_available() else "cpu"
@@ -52,9 +53,9 @@ def get_data(per_class_limit=1000, test_train_split=TRAIN_TEST_SPLIT, device=dev
             if count > per_class_limit:
                 break
             count += 1
-            image = np.array(
-                Image.open(f"DigitClassification/Digits/{directory}/{file}")
-            )
+            image = Image.open(f"DigitClassification/Digits/{directory}/{file}")
+            image = image.resize(IMG_SIZE)
+            image = np.array(image)
             x.append(image)
             y.append(np.array(labels[directory]))
 
@@ -70,7 +71,9 @@ def get_data(per_class_limit=1000, test_train_split=TRAIN_TEST_SPLIT, device=dev
 
 
 def make_model():
-    model = nn.Sequential(nn.Linear(450, 100), nn.ReLU(), nn.Linear(100, 11))
+    model = nn.Sequential(
+        nn.Linear(IMG_SIZE[0] * IMG_SIZE[1], 256), nn.ReLU(), nn.Linear(256, 11)
+    )
     return model
 
 
@@ -148,5 +151,6 @@ for i in range(NUM_MODELS):
         i + 1,
         epochs=EPOCHS,
         plot_metrics=PLOT,
+        lr=LEARNING_RATE,
     )
     save_model(model, i + 1)

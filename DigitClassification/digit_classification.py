@@ -52,6 +52,9 @@ def bar_plot_data():
     data = {}
 
     for directory in os.listdir("DigitClassification/Digits"):
+        if directory.endswith(".png"):
+            continue
+        
         data[directory] = os.listdir(
             os.path.join("DigitClassification/Digits", directory)
         ).__len__()
@@ -60,8 +63,8 @@ def bar_plot_data():
     plt.show()
 
 
-x, y = get_data(limit=20, to_numpy=True)
+# x, y = get_data(limit=20, to_numpy=True)
 
-labels = get_labels(to_numpy=True)
+# labels = get_labels(to_numpy=True)
 
-
+bar_plot_data()
